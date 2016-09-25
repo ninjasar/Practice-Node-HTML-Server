@@ -1,0 +1,56 @@
+<html>
+  <head>
+    <title> Sarah experiment </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  </head>
+  <body>
+
+    <div id="pointer" style="position:absolute;top:10px;left:10px;width:0px;height:0px;border-color:#000000;border-width:10px;border-style:solid;border-radius:10px;"></div>
+
+    <script type="text/javascript">
+
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+
+      var mouseX = 0;
+      var mouseY = 0;
+
+      var red = 0;
+      var blue = 0;
+      var green = 0;
+
+      function resetPointerColor(){
+
+        $( "body" ).css('background-color', 'rgb(' + Math.floor(red) + ',' + Math.floor(green) + ',' + Math.floor(blue) + ')');
+
+      }
+
+      $("body").mousemove(function(e){
+
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        green = (mouseX / windowWidth) * 255;
+
+        resetPointerColor();
+
+      });
+
+      $( "body" ).click(() => {
+
+        $( "#pointer" ).animate({
+          left: mouseX - 10 + "px",
+          top : mouseY - 10 + "px"
+        }, 500);
+
+        red = (mouseX / windowWidth) * 255;
+        blue = (mouseY / windowHeight) * 255;
+
+        resetPointerColor();
+
+      });
+
+    </script>
+
+  </body>
+</html>
