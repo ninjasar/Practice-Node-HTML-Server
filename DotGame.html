@@ -1,0 +1,246 @@
+<html>
+  <head>
+    <title>
+      Dots
+    </title>
+
+    <style>
+
+      body{
+        text-align: center;
+      }
+      .container {
+        margin-top: 100px;
+        display: inline-block;
+      }
+      .corner {
+        background-color: black;
+        width: 7px;
+        height: 7px;
+        border-radius: 1px;
+        display: inline-block;
+      }
+      .line {
+        display: inline-block;
+      }
+      .line:hover {
+        background-color: lightgrey;
+      }
+      .line.vertical{
+        width: 5px;
+        height: 50px;
+        margin-left: 1px;
+        margin-right: 1px;
+      }
+      .line.horizontal {
+        width: 50px;
+        height: 5px;
+        margin-top: 1px;
+        margin-bottom: 1px;
+      }
+      .box {
+        width: 50px;
+        height: 50px;
+        display: inline-block;
+      }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <div class="turn">
+
+    </div>
+
+    <div class="container">
+
+      <script type="text/javascript">
+
+        var boardWidth = 7;
+        var boardHeight = 5;
+        var teamColors = ['pink', 'blue'];
+
+        var makeLineRow = (y) => {
+
+          for(var x = 0; x<boardWidth; x++){
+
+            document.write('<div x=' + x + ' y=' + y + ' class="corner"></div>');
+            document.write('<div x=' + x + ' y=' + y + ' class="line horizontal" onclick="changeLineColor(this)"></div>');
+
+          }
+          document.write('<div class="corner"></div>');
+          document.write('<br/>');
+
+        }
+
+        var makeBoxRow = (y) => {
+
+          for(var x=0; x<boardWidth; x++){
+            document.write('<div x=' + x + ' y=' + y + ' class="line vertical" onclick="changeLineColor(this)"></div>');
+            document.write('<div x=' + x + ' y=' + y + ' class="box"></div>')
+          }
+          document.write('<div x=' + boardWidth + ' y=' + y + ' class="line vertical" onclick="changeLineColor(this)"></div>');
+          document.write('<br/>')
+
+        }
+
+        for(var y = 0; y<boardHeight; y++){
+
+          makeLineRow(y);
+          makeBoxRow(y);
+
+        }
+
+        makeLineRow(boardHeight);
+
+        var currentTurn = 0;
+
+        var changeLineColor = (line) => {
+
+          line = $(line);
+
+          if(line.hasClass('picked')) {
+
+            alert("this line has already been picked.");
+
+          }else{
+
+            line.css('background-color', currentTeamColor());
+            line.addClass('picked');
+
+            var x = parseInt(line.attr('x'));
+            var y = parseInt(line.attr('y'));
+
+            var filledABox = false;
+
+            if(line.hasClass('vertical')){
+
+              if(x-1 >= 0 && checkBox(x-1, y)){
+                fillBox(x-1, y);
+                filledABox = true;
+              }
+
+              if(x < boardWidth && checkBox(x, y)){
+                fillBox(x, y);
+                filledABox = true;
+              }
+
+            }
+
+            if(line.hasClass('horizontal')){
+
+              if(y-1 >= 0 && checkBox(x, y-1)){
+                fillBox(x, y-1);
+                filledABox = true;
+              }
+
+              if(y < boardHeight && checkBox(x, y)){
+                fillBox(x, y);
+                filledABox = true;
+              }
+
+            }
+
+            if(filledABox){
+
+              if(isGameOver()){
+
+                var winner = whoWon();
+
+                if(winner === false){
+                  alert('Game was tied!');
+                }else{
+                  alert(winner + ' won the game!');
+                }
+
+              }
+
+            }else{
+
+              nextTurn();
+
+            }
+
+          }
+
+        }
+
+        var nextTurn = () => {
+
+          currentTurn = (currentTurn + 1) % 2;
+
+          $('.turn').html('It is ' + currentTeamColor() + '\'s turn.');
+
+        }
+
+        var checkBox = (x, y) => {
+
+          var lines = [
+            $('.line.horizontal[x=' + x + '][y=' + y + ']'),
+            $('.line.vertical[x=' + x + '][y=' + y + ']'),
+            $('.line.horizontal[x=' + x + '][y=' + (y + 1) + ']'),
+            $('.line.vertical[x=' + (x + 1) + '][y=' + y + ']')
+          ];
+
+          var fullBox = true;
+
+          lines.forEach((line) => {
+
+            fullBox = fullBox && line.hasClass('picked');
+
+          });
+
+          return fullBox;
+
+        }
+
+        var fillBox = (x, y) => {
+
+          var box = $('.box[x=' + x + '][y=' + y + ']');
+
+          box.css('background-color', currentTeamColor());
+          box.attr('owner', currentTeamColor());
+          box.addClass('picked');
+
+        }
+
+        var currentTeamColor = () => teamColors[currentTurn];
+
+        var isGameOver = () => boardHeight * boardWidth === $('.box.picked').length;
+
+        var whoWon = () => {
+
+          var teams = {};
+
+          $('.box').toArray().forEach((box) => {
+
+            var owner = $(box).attr('owner');
+            if(teams[owner] === undefined) teams[owner] = 0;
+            teams[owner]++;
+
+          });
+
+          var winner;
+          var winnerCount = 0;
+
+          for(var key in teams){
+
+            if(teams[key] > winnerCount){
+              winnerCount = teams[key];
+              winner = key;
+            }
+
+          }
+
+          return winner;
+
+        }
+
+      </script>
+    </div>
+  </body>
+
+</html>
