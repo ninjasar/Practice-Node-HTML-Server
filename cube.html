@@ -25,9 +25,13 @@
         height: 100%;
         position: absolute;
         transform-style: preserve-3d;
-        animation-name: rotate360;
-        animation-duration: 30s;
-        animation-iteration-count: 1;
+      }
+
+      #cube:hover {
+        animation-name: rotatecube;
+        animation-duration: 5s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
       }
 
       #cube .side {
